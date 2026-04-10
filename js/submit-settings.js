@@ -3,12 +3,13 @@ const canvasUrlInput = document.getElementById("canvas-url");
 const ntfyTopicInput = document.getElementById("ntfy-topic");
 const formStatus = document.getElementById("form-status");
 
-// Detect environment (local vs deployed)
+// local dev = localhost / 127.0.0.1
+// production = same domain the site is hosted on
 const API_BASE =
   window.location.hostname === "localhost" ||
     window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
-    : "https://your-backend-domain.com"; // <-- CHANGE THIS
+    : "";
 
 if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
   form.addEventListener("submit", async (event) => {
@@ -45,7 +46,7 @@ if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
       formStatus.textContent = data?.message || "Settings submitted successfully.";
       form.reset();
     } catch (error) {
-      formStatus.textContent = "Could not submit settings. Check the backend URL and try again.";
+      formStatus.textContent = error.message || "Could not submit settings. Check the backend URL and try again.";
       console.error("Submit failed:", error);
     }
   });
