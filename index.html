@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Connect your Canvas calendar feed, set up the ntfy app, and receive daily assignment reminders." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+  <title>Canvas Notifier</title>
+</head>
+
+<body>
+  <div class="page-shell">
+    <header class="hero">
+      <nav class="topbar">
+        <div class="brand">
+          <span class="brand-mark">CN</span>
+          <span class="brand-name">Canvas Notifier</span>
+        </div>
+        <a class="topbar-link" href="#backend">Backend status</a>
+      </nav>
+
+      <section class="hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">Canvas assignments, pushed daily</p>
+          <h1>Turn your Canvas calendar into a clean phone notification feed.</h1>
+          <p class="hero-text">
+            Paste your Canvas calendar link, install the <code>ntfy</code> app,
+            subscribe to a topic on your phone, and use this project to send
+            daily assignment reminders from Canvas to that topic.
+          </p>
+
+          <div class="hero-actions">
+            <a class="button button-primary" href="#setup">Start setup</a>
+            <a class="button button-secondary" href="#connect">View form preview</a>
+          </div>
+
+          <ul class="hero-points">
+            <li>Uses your Canvas iCal feed</li>
+            <li>Requires the <code>ntfy</code> app on your phone</li>
+            <li>Highlights assignments due today</li>
+          </ul>
+        </div>
+
+        <aside class="hero-panel">
+          <p class="panel-label">Daily reminder preview</p>
+          <div class="phone-card">
+            <div class="phone-header">
+              <span class="phone-dot"></span>
+              <span class="phone-title">ntfy.sh/stats-homework</span>
+            </div>
+            <div class="message-stack">
+              <article class="message message-priority">
+                <p class="message-tag">Due today</p>
+                <h2>Math Worksheet 7</h2>
+                <p>Due: 2026-04-09 11:59 PM</p>
+              </article>
+              <article class="message">
+                <p class="message-tag">Upcoming</p>
+                <h2>History DBQ Draft</h2>
+                <p>Due: 2026-04-11 08:00 AM</p>
+              </article>
+              <article class="message">
+                <p class="message-tag">Upcoming</p>
+                <h2>Physics Lab Upload</h2>
+                <p>Due: 2026-04-12 09:30 PM</p>
+              </article>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </header>
+
+    <main>
+      <section class="info-band" id="backend">
+        <div class="info-card">
+          <p class="info-title">Backend status</p>
+          <p>
+            Your backend currently reads two environment variables:
+            <code>CANVAS_URL</code> and <code>NTFY_TOPIC</code>.
+          </p>
+        </div>
+        <div class="info-card">
+          <p class="info-title">Current delivery model</p>
+          <p>
+            Right now this project is designed for one Canvas feed and one
+            topic at a time, then posts daily reminders to <code>ntfy.sh</code>.
+          </p>
+        </div>
+      </section>
+
+      <section class="setup-section" id="setup">
+        <div class="section-heading">
+          <p class="eyebrow">Setup flow</p>
+          <h2>Three steps to start getting assignment reminders</h2>
+          <p>
+            You need your Canvas iCal link, the <code>ntfy</code> mobile app,
+            and a topic name you subscribe to in the app.
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          <article class="step-card">
+            <span class="step-number">01</span>
+            <h3>Copy your Canvas calendar link</h3>
+            <p>
+              Open Canvas, go to Calendar, and copy the calendar feed or iCal
+              export URL. That link is what the backend uses as
+              <code>CANVAS_URL</code>.
+            </p>
+            <div class="code-block">
+              https://school.instructure.com/feeds/calendar.ics?token=...
+            </div>
+          </article>
+
+          <article class="step-card">
+            <span class="step-number">02</span>
+            <h3>Install ntfy and create a topic</h3>
+            <p>
+              Download the <code>ntfy</code> app on your phone, pick a
+              hard-to-guess topic name, and subscribe to that topic in the
+              app. That topic becomes <code>NTFY_TOPIC</code> in the backend.
+            </p>
+            <div class="topic-list">
+              <span>leo-canvas-alerts</span>
+              <span>school-due-today</span>
+              <span>stats-homework</span>
+            </div>
+          </article>
+
+          <article class="step-card">
+            <span class="step-number">03</span>
+            <h3>Run the notifier daily</h3>
+            <p>
+              Run the notifier on a schedule. It checks your Canvas feed,
+              separates anything due today, and sends the reminder to your
+              <code>ntfy</code> topic.
+            </p>
+            <div class="mini-flow">
+              <span>Canvas .ics</span>
+              <span>Notifier</span>
+              <span>ntfy push</span>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="form-section" id="connect">
+        <div class="section-heading">
+          <p class="eyebrow">Form preview</p>
+          <h2>This is the input the backend needs</h2>
+          <p>
+            Right now the backend only needs a Canvas feed URL and an
+            <code>ntfy</code> topic.
+          </p>
+        </div>
+
+        <div class="form-layout">
+          <form class="setup-form" id="setup-form">
+            <label class="field">
+              <span>Canvas calendar link</span>
+              <input id="canvas-url" name="canvas_url" type="url" placeholder="Paste your Canvas .ics URL"
+                aria-label="Canvas calendar link" required />
+            </label>
+
+            <label class="field">
+              <span>ntfy topic</span>
+              <input id="ntfy-topic" name="ntfy_topic" type="text" placeholder="example: leo-canvas-alerts"
+                aria-label="ntfy topic" required />
+            </label>
+
+            <label class="field">
+              <span>What this project does</span>
+              <textarea rows="5" readonly>
+This project reads your Canvas calendar feed, finds upcoming assignments, highlights anything due today, and sends the reminder to your ntfy topic.</textarea>
+            </label>
+
+            <button class="button button-primary" type="submit">
+              Submit settings
+            </button>
+            <p id="form-status" aria-live="polite"></p>
+          </form>
+
+          <div class="note-stack">
+            <aside class="note-panel">
+              <h3>Current limitation</h3>
+              <p>
+                The backend does not save per-user settings yet. It only uses
+                one configured Canvas URL and one topic from environment
+                variables.
+              </p>
+              <p>
+                So this form is a preview of the input shape, not a live
+                settings page yet.
+              </p>
+            </aside>
+
+            <aside class="mini-status-card">
+              <p class="info-title">Current flow</p>
+              <div class="mini-status-grid">
+                <div>
+                  <span class="mini-status-label">Input</span>
+                  <strong>Canvas + topic</strong>
+                </div>
+                <div>
+                  <span class="mini-status-label">Phone app</span>
+                  <strong>ntfy required</strong>
+                </div>
+                <div>
+                  <span class="mini-status-label">Output</span>
+                  <strong>ntfy push</strong>
+                </div>
+                <div>
+                  <span class="mini-status-label">Storage</span>
+                  <strong>Not yet</strong>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+<script src="js/submit-settings.js"></script>
+
+</html>

@@ -1,0 +1,5 @@
+id="q8j4wn"
+node_modules/
+.env
+npm-debug.log
+.DS_Store
