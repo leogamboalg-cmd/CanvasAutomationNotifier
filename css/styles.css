@@ -32,6 +32,10 @@ body {
   overflow-x: hidden;
 }
 
+body.overlay-open {
+  overflow: hidden;
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -594,6 +598,202 @@ code {
   resize: vertical;
 }
 
+.summary-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(171, 187, 255, 0.14);
+  border-radius: 1rem;
+  background: rgba(5, 10, 25, 0.78);
+}
+
+.summary-row {
+  display: grid;
+  gap: 0.3rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(171, 187, 255, 0.12);
+}
+
+.summary-row:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.summary-label {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8fd9ff;
+}
+
+.summary-card strong {
+  color: var(--ink);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+
+.success-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.success-overlay__backdrop {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(83, 210, 255, 0.16), transparent 24%),
+    radial-gradient(circle at 80% 15%, rgba(107, 109, 255, 0.24), transparent 30%),
+    rgba(3, 8, 22, 0.82);
+  backdrop-filter: blur(16px);
+}
+
+.success-overlay__dialog {
+  position: relative;
+  width: min(100%, 32rem);
+  padding: 2rem 1.5rem 1.6rem;
+  border-radius: 2rem;
+  text-align: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top, rgba(83, 210, 255, 0.24), transparent 34%),
+    linear-gradient(180deg, rgba(10, 17, 39, 0.96), rgba(7, 12, 28, 0.98));
+  border: 1px solid rgba(173, 191, 255, 0.18);
+  box-shadow: 0 32px 90px rgba(1, 4, 16, 0.72);
+  transform: translateY(16px) scale(0.94);
+  transition: transform 260ms ease;
+}
+
+.success-overlay.is-visible .success-overlay__dialog {
+  transform: translateY(0) scale(1);
+}
+
+.success-overlay__dialog::before,
+.success-overlay__dialog::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.success-overlay__dialog::before {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 35%, transparent 70%, rgba(83, 210, 255, 0.08));
+}
+
+.success-overlay__dialog::after {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.success-overlay__eyebrow,
+.success-overlay__message,
+.success-overlay__button,
+.success-overlay__dialog h2 {
+  position: relative;
+  z-index: 1;
+}
+
+.success-overlay__eyebrow {
+  margin: 0 0 0.8rem;
+  font-family: "Space Grotesk", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.78rem;
+  color: #93e3ff;
+}
+
+.success-overlay__dialog h2 {
+  margin: 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+}
+
+.success-overlay__message {
+  margin: 0.9rem auto 1.4rem;
+  max-width: 26rem;
+  color: #ced9ff;
+  line-height: 1.7;
+}
+
+.success-overlay__button {
+  min-width: 14rem;
+}
+
+.success-overlay__orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(157, 204, 255, 0.18);
+  pointer-events: none;
+}
+
+.success-overlay__orbit--one {
+  inset: 1.2rem;
+  animation: success-spin 14s linear infinite;
+}
+
+.success-overlay__orbit--two {
+  inset: 2.7rem;
+  border-style: dashed;
+  animation: success-spin-reverse 18s linear infinite;
+}
+
+.success-overlay__burst {
+  position: relative;
+  width: 7rem;
+  height: 7rem;
+  margin: 0 auto 1.2rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle, rgba(147, 227, 255, 0.24) 0%, rgba(147, 227, 255, 0.08) 36%, rgba(147, 227, 255, 0) 74%);
+}
+
+.success-overlay__burst::before {
+  content: "✓";
+  width: 4.6rem;
+  height: 4.6rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #03111f;
+  background: linear-gradient(135deg, #9ae9ff, #7c9cff 65%, #a679ff);
+  box-shadow: 0 0 0 12px rgba(122, 153, 255, 0.08), 0 0 30px rgba(122, 153, 255, 0.34);
+  animation: success-pop 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.success-overlay__burst span {
+  position: absolute;
+  width: 0.38rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(147, 227, 255, 0), #9ae9ff);
+  transform-origin: center 3.4rem;
+  animation: success-ray 1.2s ease-out both;
+}
+
+.success-overlay__burst span:nth-child(1) { transform: rotate(0deg) translateY(-2.7rem); }
+.success-overlay__burst span:nth-child(2) { transform: rotate(60deg) translateY(-2.7rem); }
+.success-overlay__burst span:nth-child(3) { transform: rotate(120deg) translateY(-2.7rem); }
+.success-overlay__burst span:nth-child(4) { transform: rotate(180deg) translateY(-2.7rem); }
+.success-overlay__burst span:nth-child(5) { transform: rotate(240deg) translateY(-2.7rem); }
+.success-overlay__burst span:nth-child(6) { transform: rotate(300deg) translateY(-2.7rem); }
+
 .note-panel {
   align-self: start;
 }
@@ -726,6 +926,51 @@ code {
   }
 }
 
+@keyframes success-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes success-ray {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+@keyframes success-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes success-spin-reverse {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
 @media (max-width: 960px) {
   .hero-grid,
   .steps-grid,
@@ -780,6 +1025,15 @@ code {
 
   .button {
     width: 100%;
+  }
+
+  .success-overlay__dialog {
+    padding: 1.7rem 1.1rem 1.2rem;
+    border-radius: 1.6rem;
+  }
+
+  .success-overlay__button {
+    min-width: 0;
   }
 }
 

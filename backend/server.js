@@ -41,6 +41,14 @@ app.use(cors({
 
 app.use(express.json({ limit: "10kb" }));
 
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100,               // 100 requests per IP per window across the API
+    standardHeaders: "draft-8",
+    legacyHeaders: false,
+    message: { error: "Too many requests. Please try again later." },
+});
+
 const submitLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     limit: 5,                 // 5 requests per IP per window
@@ -48,6 +56,8 @@ const submitLimiter = rateLimit({
     legacyHeaders: false,
     message: { error: "Too many submissions. Please try again later." },
 });
+
+app.use("/api", apiLimiter);
 
 function isValidCanvasUrl(value) {
     if (typeof value !== "string") return false;
@@ -59,21 +69,27 @@ function isValidCanvasUrl(value) {
         const parsed = new URL(url);
 
         if (parsed.protocol !== "https:") return false;
-
-        // Keep this broad enough for Canvas schools using different subdomains,
-        // but still require an ICS-looking link.
-        const looksLikeCanvas =
-            parsed.hostname.includes("instructure.com") ||
-            parsed.hostname.includes("canvas");
+        if (!isAllowedCanvasHost(parsed.hostname)) return false;
 
         const looksLikeIcs =
             parsed.pathname.toLowerCase().endsWith(".ics") ||
             parsed.href.toLowerCase().includes(".ics");
 
-        return looksLikeCanvas && looksLikeIcs;
+        return looksLikeIcs;
     } catch {
         return false;
     }
+}
+
+function isAllowedCanvasHost(hostname) {
+    if (typeof hostname !== "string") return false;
+
+    const normalized = hostname.trim().toLowerCase();
+
+    return (
+        normalized === "canvas.instructure.com" ||
+        normalized.endsWith(".instructure.com")
+    );
 }
 
 function isValidNtfyTopic(value) {
@@ -84,6 +100,20 @@ function isValidNtfyTopic(value) {
 
     // Letters, numbers, hyphen, underscore only
     return /^[A-Za-z0-9_-]+$/.test(topic);
+}
+
+function getSuccessMessage(message) {
+    if (typeof message !== "string") {
+        return "Settings submitted successfully.";
+    }
+
+    const normalizedMessage = message.trim();
+
+    if (!normalizedMessage || normalizedMessage.toLowerCase() === "ok") {
+        return "Settings submitted successfully.";
+    }
+
+    return normalizedMessage;
 }
 
 app.post("/api/submit", submitLimiter, async (req, res) => {
@@ -132,7 +162,7 @@ app.post("/api/submit", submitLimiter, async (req, res) => {
         }
 
         return res.json({
-            message: data?.message || "Success",
+            message: getSuccessMessage(data?.message),
         });
     } catch (err) {
         const isAbort = err.name === "AbortError";
@@ -143,6 +173,10 @@ app.post("/api/submit", submitLimiter, async (req, res) => {
             error: isAbort ? "Upstream timeout" : "Server error",
         });
     }
+});
+
+app.get("/", (req, res) => {
+    res.send("Backend is running");
 });
 
 app.get("/api/status", (req, res) => {
