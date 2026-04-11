@@ -87,9 +87,10 @@ function isAllowedCanvasHost(hostname) {
     const normalized = hostname.trim().toLowerCase();
 
     return (
-        normalized === "canvas.cpp.edu" ||
         normalized === "canvas.instructure.com" ||
-        normalized.endsWith(".instructure.com")
+        normalized.endsWith(".instructure.com") ||
+        normalized.startsWith("canvas.") ||
+        normalized.includes(".canvas.")
     );
 }
 
