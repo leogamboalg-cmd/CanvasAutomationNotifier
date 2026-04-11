@@ -4,17 +4,24 @@ const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const ical = require("ical");
 
 const app = express();
-
+const CRON_SECRET = process.env.CRON_SECRET;
 const PORT = process.env.PORT || 3000;
 const PI_ENDPOINT = process.env.PI_ENDPOINT;
 const PI_API_KEY = process.env.PI_API_KEY;
 const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN;
+const mongoose = require("mongoose");
+const User = require("./models/User");
 
 if (!PI_ENDPOINT || !PI_API_KEY || !FRONTEND_ORIGIN) {
     throw new Error("Missing PI_ENDPOINT, PI_API_KEY, or FRONTEND_ORIGIN in .env");
 }
+
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB connected"))
+    .catch(err => console.error(err));
 
 // If deployed behind Render / Railway / Nginx / Cloudflare / etc.
 // set this appropriately so req.ip works for rate limiting.
@@ -118,7 +125,7 @@ function getSuccessMessage(message) {
     return normalizedMessage;
 }
 
-app.post("/api/submit", submitLimiter, async (req, res) => {
+app.post("/api/submit", async (req, res) => {
     try {
         const canvasUrl = String(req.body.canvas_url || "").trim();
         const ntfyTopic = String(req.body.ntfy_topic || "").trim();
@@ -129,51 +136,105 @@ app.post("/api/submit", submitLimiter, async (req, res) => {
             });
         }
 
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000);
+        const existingUser = await User.findOne({
+            canvas_url: canvasUrl,
+            ntfy_topic: ntfyTopic,
+        });
 
-        let response;
-        try {
-            response = await fetch(PI_ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-API-Key": PI_API_KEY,
-                },
-                body: JSON.stringify({
-                    canvas_url: canvasUrl,
-                    ntfy_topic: ntfyTopic,
-                }),
-                signal: controller.signal,
-            });
-        } finally {
-            clearTimeout(timeout);
-        }
-
-        let data = null;
-        try {
-            data = await response.json();
-        } catch {
-            data = null;
-        }
-
-        if (!response.ok) {
-            return res.status(response.status).json({
-                error: data?.error || "Submission failed",
+        if (!existingUser) {
+            await User.create({
+                canvas_url: canvasUrl,
+                ntfy_topic: ntfyTopic,
             });
         }
 
         return res.json({
-            message: getSuccessMessage(data?.message),
+            message: "User saved successfully",
         });
+
     } catch (err) {
-        const isAbort = err.name === "AbortError";
+        console.error(err);
+        res.status(500).json({ error: "Failed to save user" });
+    }
+});
 
-        console.error("Backend error:", isAbort ? "Pi request timed out" : err.message);
+app.post("/api/notify-all", async (req, res) => {
+    try {
 
-        return res.status(isAbort ? 504 : 500).json({
-            error: isAbort ? "Upstream timeout" : "Server error",
-        });
+        const provided = req.headers["x-cron-secret"];
+
+        if (provided !== CRON_SECRET) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+
+        const users = await User.find();
+
+        console.log(`Running notifyAll for ${users.length} users`);
+
+        for (const user of users) {
+            try {
+                const response = await fetch(user.canvas_url);
+                const text = await response.text();
+
+                const events = ical.parseICS(text);
+                const now = new Date();
+
+                let upcomingMessage = "";
+                let importantMessage = "";
+
+                for (const key in events) {
+                    const event = events[key];
+
+                    if (event.type !== "VEVENT") continue;
+                    if (!event.end) continue;
+
+                    const due = new Date(event.end);
+
+                    if (due <= now) continue;
+
+                    const block =
+                        `${event.summary || "Untitled event"}\n` +
+                        `Due: ${due.toLocaleString()}\n` +
+                        "------------------------------\n";
+
+                    if (due.toDateString() === now.toDateString()) {
+                        importantMessage += block;
+                    } else {
+                        upcomingMessage += block;
+                    }
+                }
+
+                if (upcomingMessage) {
+                    await fetch(`https://ntfy.sh/${user.ntfy_topic}`, {
+                        method: "POST",
+                        body: upcomingMessage,
+                    });
+
+                    console.log(`Sent upcoming to ${user.ntfy_topic}`);
+                }
+
+                if (importantMessage) {
+                    const prefix =
+                        "IMPORTANT DUE TODAY | IMPORTANT DUE TODAY | IMPORTANT DUE TODAY\n";
+
+                    await fetch(`https://ntfy.sh/${user.ntfy_topic}`, {
+                        method: "POST",
+                        body: prefix + importantMessage,
+                    });
+
+                    console.log(`Sent IMPORTANT to ${user.ntfy_topic}`);
+                }
+
+            } catch (err) {
+                console.error(`User failed: ${user.ntfy_topic}`, err.message);
+            }
+        }
+
+        res.json({ message: "notifyAll executed" });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Failed to run notifyAll" });
     }
 });
 
