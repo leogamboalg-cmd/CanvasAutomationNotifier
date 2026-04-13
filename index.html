@@ -1,267 +1,313 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Connect your Canvas calendar feed, set up the ntfy app, and receive daily assignment reminders."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <title>Canvas Notifier</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description"
-    content="Connect your Canvas calendar feed, set up the ntfy app, and receive daily assignment reminders." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;700&display=swap"
-    rel="stylesheet" />
-  <link rel="icon" type="image/png" href="images/favicon.png" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <title>Canvas Notifier</title>
-</head>
-
-<body>
-  <div class="success-overlay" id="success-overlay" aria-hidden="true">
-    <div class="success-overlay__backdrop" data-close-success></div>
-    <div class="success-overlay__dialog" role="dialog" aria-modal="true" aria-labelledby="success-title">
-      <div class="success-overlay__orbit success-overlay__orbit--one"></div>
-      <div class="success-overlay__orbit success-overlay__orbit--two"></div>
-      <div class="success-overlay__burst" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+  <body>
+    <div class="success-overlay" id="success-overlay" aria-hidden="true">
+      <div class="success-overlay__backdrop" data-close-success></div>
+      <div
+        class="success-overlay__dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="success-title"
+      >
+        <div class="success-overlay__orbit success-overlay__orbit--one"></div>
+        <div class="success-overlay__orbit success-overlay__orbit--two"></div>
+        <div class="success-overlay__burst" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p class="success-overlay__eyebrow">Signal locked</p>
+        <h2 id="success-title">Settings launched.</h2>
+        <p class="success-overlay__message" id="success-message">
+          Your Canvas link and ntfy topic are ready for reminders.
+        </p>
+        <button
+          class="button button-primary success-overlay__button"
+          type="button"
+          data-close-success
+        >
+          Back to the dashboard
+        </button>
       </div>
-      <p class="success-overlay__eyebrow">Signal locked</p>
-      <h2 id="success-title">Settings launched.</h2>
-      <p class="success-overlay__message" id="success-message">
-        Your Canvas link and ntfy topic are ready for reminders.
-      </p>
-      <button class="button button-primary success-overlay__button" type="button" data-close-success>
-        Back to the dashboard
-      </button>
     </div>
-  </div>
-  <div class="page-shell">
-    <header class="hero">
-      <nav class="topbar">
-        <div class="brand">
-          <span class="brand-mark">CN</span>
-          <span class="brand-name">Canvas Notifier</span>
-        </div>
-        <a class="topbar-link" href="#backend">How it works</a>
-      </nav>
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <div class="brand">
+            <span class="brand-mark">CN</span>
+            <span class="brand-name">Canvas Notifier</span>
+          </div>
+          <a class="topbar-link" href="#backend">How it works</a>
+        </nav>
 
-      <section class="hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Canvas assignments, pushed daily</p>
-          <h1>Turn your Canvas calendar into a clean phone notification feed.</h1>
-          <p class="hero-text">
-            Add your Canvas calendar link, choose a topic in the
-            <code>ntfy</code> app, and get simple reminders on your phone
-            about what is due today and what is coming up next.
-          </p>
+        <section class="hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow">Canvas assignments, pushed daily</p>
+            <h1>
+              Turn your Canvas calendar into a clean phone notification feed.
+            </h1>
+            <p class="hero-text">
+              Add your Canvas calendar link, choose a topic in the
+              <code>ntfy</code> app, and get simple reminders on your phone
+              about what is due today and what is coming up next.
+            </p>
 
-          <div class="hero-actions">
-            <a class="button button-primary" href="#setup">Start setup</a>
-            <a class="button button-secondary" href="#connect">Open submit form</a>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#setup">Start setup</a>
+              <a class="button button-secondary" href="#connect"
+                >Open submit form</a
+              >
+            </div>
+
+            <ul class="hero-points">
+              <li>Pulls assignments from your Canvas calendar</li>
+              <li>
+                Sends reminders to the <code>ntfy</code> app on your phone
+              </li>
+              <li>Makes it easier to see what needs attention today</li>
+            </ul>
           </div>
 
-          <ul class="hero-points">
-            <li>Pulls assignments from your Canvas calendar</li>
-            <li>Sends reminders to the <code>ntfy</code> app on your phone</li>
-            <li>Makes it easier to see what needs attention today</li>
-          </ul>
-        </div>
-
-        <aside class="hero-panel">
-          <p class="panel-label">Daily reminder preview</p>
-          <div class="phone-card">
-            <div class="phone-header">
-              <span class="phone-dot"></span>
-              <span class="phone-title">ntfy.sh/stats-homework</span>
-            </div>
-            <div class="message-stack">
-              <article class="message message-priority">
-                <p class="message-tag">Due today</p>
-                <h2>Math Worksheet 7</h2>
-                <p>Due: 2026-04-10 11:59 PM</p>
-              </article>
-              <article class="message">
-                <p class="message-tag">Upcoming</p>
-                <h2>History DBQ Draft</h2>
-                <p>Due: 2026-04-11 08:00 AM</p>
-              </article>
-              <article class="message">
-                <p class="message-tag">Upcoming</p>
-                <h2>Physics Lab Upload</h2>
-                <p>Due: 2026-04-12 09:30 PM</p>
-              </article>
-            </div>
-          </div>
-        </aside>
-      </section>
-    </header>
-
-    <main>
-      <section class="info-band" id="backend">
-        <div class="info-card">
-          <p class="info-title">What you need</p>
-          <p>
-            You only need two things to get started: your Canvas calendar
-            link and the topic name you want to use in <code>ntfy</code>.
-          </p>
-        </div>
-        <div class="info-card">
-          <p class="info-title">What you get</p>
-          <p>
-            This project checks one Canvas calendar and sends reminders to one
-            <code>ntfy</code> topic, which works well for a single student setup.
-          </p>
-        </div>
-      </section>
-
-      <section class="setup-section" id="setup">
-        <div class="section-heading">
-          <p class="eyebrow">Setup flow</p>
-          <h2>Three steps to start getting assignment reminders</h2>
-          <p>
-            You need your Canvas calendar link, the <code>ntfy</code> app,
-            and a topic name you will subscribe to on your phone.
-          </p>
-        </div>
-
-        <div class="steps-grid">
-          <article class="step-card">
-            <span class="step-number">01</span>
-            <h3>Copy your Canvas calendar link</h3>
-            <p>
-              Open Canvas, go to Calendar, and copy your calendar feed link.
-              This is the link the app uses to look up your assignments.
-            </p>
-            <div class="code-block">
-              https://school.instructure.com/feeds/calendar.ics?token=...
-            </div>
-          </article>
-
-          <article class="step-card">
-            <span class="step-number">02</span>
-            <h3>Install ntfy and create a topic</h3>
-            <p>
-              Download the <code>ntfy</code> app on your phone, choose a topic
-              name, and subscribe to that topic in the app so your reminders
-              show up there.
-            </p>
-            <div class="topic-list">
-              <span>leo-canvas-alerts</span>
-              <span>school-due-today</span>
-              <span>stats-homework</span>
-            </div>
-          </article>
-
-          <article class="step-card">
-            <span class="step-number">03</span>
-            <h3>Run the notifier daily</h3>
-            <p>
-              Run the notifier once a day. It checks your Canvas calendar,
-              finds what is due soon, and sends a reminder to your phone.
-            </p>
-            <div class="mini-flow">
-              <span>Canvas calendar</span>
-              <span>Daily check</span>
-              <span>Phone reminder</span>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <section class="form-section" id="connect">
-        <div class="section-heading">
-          <p class="eyebrow">Submit settings</p>
-          <h2>Check your details before submitting</h2>
-          <p>
-            Make sure your Canvas link and topic name look right before you
-            send them.
-          </p>
-        </div>
-
-        <div class="form-layout">
-          <form class="setup-form" id="setup-form">
-            <label class="field">
-              <span>Canvas calendar link</span>
-              <input id="canvas-url" name="canvas_url" type="url"
-                placeholder="https://school.instructure.com/feeds/calendar.ics?token=..."
-                aria-label="Canvas calendar link" required />
-            </label>
-
-            <label class="field">
-              <span>Topic name in ntfy</span>
-              <input id="ntfy-topic" name="ntfy_topic" type="text" placeholder="leo-canvas-alerts"
-                aria-label="ntfy topic" required />
-            </label>
-
-            <label class="field">
-              <span>Your reminder settings</span>
-              <div class="summary-card" aria-label="Your reminder settings">
-                <div class="summary-row">
-                  <span class="summary-label">Canvas calendar</span>
-                  <strong id="summary-canvas">Add your Canvas calendar link above.</strong>
-                </div>
-                <div class="summary-row">
-                  <span class="summary-label">Topic in ntfy</span>
-                  <strong id="summary-topic">Choose a topic name above.</strong>
-                </div>
-                <div class="summary-row">
-                  <span class="summary-label">What this helps with</span>
-                  <strong>Daily reminders about assignments and due dates</strong>
-                </div>
+          <aside class="hero-panel">
+            <p class="panel-label">Daily reminder preview</p>
+            <div class="phone-card">
+              <div class="phone-header">
+                <span class="phone-dot"></span>
+                <span class="phone-title">ntfy.sh/stats-homework</span>
               </div>
-            </label>
-
-            <button class="button button-primary" type="submit">
-              Submit settings
-            </button>
-            <p id="form-status" aria-live="polite"></p>
-          </form>
-
-          <div class="note-stack">
-            <aside class="note-panel">
-              <h3>What happens after submit</h3>
-              <p>
-                The app checks that your link and topic look valid, then saves
-                or sends them wherever you have connected this project.
-              </p>
-              <p>
-                This button is real. If the project is running correctly,
-                pressing submit will actually send your settings.
-              </p>
-            </aside>
-
-            <aside class="mini-status-card">
-              <p class="info-title">Quick summary</p>
-              <div class="mini-status-grid">
-                <div>
-                  <span class="mini-status-label">You add</span>
-                  <strong>Calendar link + topic</strong>
-                </div>
-                <div>
-                  <span class="mini-status-label">The app does</span>
-                  <strong>Sends your settings</strong>
-                </div>
-                <div>
-                  <span class="mini-status-label">Then</span>
-                  <strong>Checks both entries</strong>
-                </div>
-                <div>
-                  <span class="mini-status-label">Result</span>
-                  <strong>Ready for reminders</strong>
-                </div>
+              <div class="message-stack">
+                <article class="message message-priority">
+                  <p class="message-tag">Due today</p>
+                  <h2>Math Worksheet 7</h2>
+                  <p>Due: 2026-04-10 11:59 PM</p>
+                </article>
+                <article class="message">
+                  <p class="message-tag">Upcoming</p>
+                  <h2>History DBQ Draft</h2>
+                  <p>Due: 2026-04-11 08:00 AM</p>
+                </article>
+                <article class="message">
+                  <p class="message-tag">Upcoming</p>
+                  <h2>Physics Lab Upload</h2>
+                  <p>Due: 2026-04-12 09:30 PM</p>
+                </article>
               </div>
-            </aside>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-</body>
-<script src="js/submit-settings.js"></script>
+            </div>
+          </aside>
+        </section>
+      </header>
 
+      <main>
+        <section class="info-band" id="backend">
+          <div class="info-card">
+            <p class="info-title">What you need</p>
+            <p>
+              You only need two things to get started: your Canvas calendar link
+              and the topic name you want to use in <code>ntfy</code>.
+            </p>
+          </div>
+          <div class="info-card">
+            <p class="info-title">What you get</p>
+            <p>
+              This project checks one Canvas calendar and sends reminders to one
+              <code>ntfy</code> topic, which works well for a single student
+              setup.
+            </p>
+          </div>
+        </section>
+
+        <section class="setup-section" id="setup">
+          <div class="section-heading">
+            <p class="eyebrow">Setup flow</p>
+            <h2>Three steps to start getting assignment reminders</h2>
+            <p>
+              You need your Canvas calendar link, the <code>ntfy</code> app, and
+              a topic name you will subscribe to on your phone.
+            </p>
+          </div>
+
+          <div class="steps-grid">
+            <article class="step-card">
+              <span class="step-number">01</span>
+              <h3>Copy your Canvas calendar link</h3>
+              <p>
+                Open Canvas, go to Calendar, and copy your calendar feed link.
+                This is the link the app uses to look up your assignments.
+              </p>
+              <div class="code-block">
+                https://school.instructure.com/feeds/calendar.ics?token=...
+              </div>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">02</span>
+              <h3>Install ntfy and create a topic</h3>
+              <p>
+                Download the <code>ntfy</code> app on your phone, choose a topic
+                name, and subscribe to that topic in the app so your reminders
+                show up there.
+              </p>
+              <div class="topic-list">
+                <span>leo-canvas-alerts</span>
+                <span>school-due-today</span>
+                <span>stats-homework</span>
+              </div>
+            </article>
+
+            <article class="step-card">
+              <span class="step-number">03</span>
+              <h3>Run the notifier daily</h3>
+              <p>
+                Run the notifier once a day. It checks your Canvas calendar,
+                finds what is due soon, and sends a reminder to your phone.
+              </p>
+              <div class="mini-flow">
+                <span>Canvas calendar</span>
+                <span>Daily check</span>
+                <span>Phone reminder</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="form-section" id="connect">
+          <div class="section-heading">
+            <p class="eyebrow">Submit settings</p>
+            <h2>Check your details before submitting</h2>
+            <p>
+              Make sure your Canvas link and topic name look right before you
+              send them.
+            </p>
+          </div>
+
+          <div class="form-layout">
+            <form class="setup-form" id="setup-form">
+              <label class="field">
+                <span>Canvas calendar link</span>
+                <input
+                  id="canvas-url"
+                  name="canvas_url"
+                  type="url"
+                  placeholder="https://school.instructure.com/feeds/calendar.ics?token=..."
+                  aria-label="Canvas calendar link"
+                  required
+                />
+              </label>
+
+              <label class="field">
+                <span>Topic name in ntfy</span>
+                <input
+                  id="ntfy-topic"
+                  name="ntfy_topic"
+                  type="text"
+                  placeholder="leo-canvas-alerts"
+                  aria-label="ntfy topic"
+                  required
+                />
+              </label>
+
+              <label class="field">
+                <span>Passcode</span>
+                <input
+                  id="passcode"
+                  name="passcode"
+                  type="password"
+                  placeholder=""
+                  aria-label="Passcode"
+                  required
+                />
+              </label>
+
+              <label class="field">
+                <span>Your reminder settings</span>
+                <div class="summary-card" aria-label="Your reminder settings">
+                  <div class="summary-row">
+                    <span class="summary-label">Canvas calendar</span>
+                    <strong id="summary-canvas"
+                      >Add your Canvas calendar link above.</strong
+                    >
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">Topic in ntfy</span>
+                    <strong id="summary-topic"
+                      >Choose a topic name above.</strong
+                    >
+                  </div>
+                  <div class="summary-row">
+                    <span class="summary-label">What this helps with</span>
+                    <strong
+                      >Daily reminders about assignments and due dates</strong
+                    >
+                  </div>
+                </div>
+              </label>
+
+              <button class="button button-primary" type="submit">
+                Submit settings
+              </button>
+              <p id="form-status" aria-live="polite"></p>
+            </form>
+
+            <div class="note-stack">
+              <aside class="note-panel">
+                <h3>What happens after submit</h3>
+                <p>
+                  The app checks that your link and topic look valid, then saves
+                  or sends them wherever you have connected this project.
+                </p>
+                <p>
+                  This button is real. If the project is running correctly,
+                  pressing submit will actually send your settings.
+                </p>
+              </aside>
+
+              <aside class="mini-status-card">
+                <p class="info-title">Quick summary</p>
+                <div class="mini-status-grid">
+                  <div>
+                    <span class="mini-status-label">You add</span>
+                    <strong>Calendar link + topic</strong>
+                  </div>
+                  <div>
+                    <span class="mini-status-label">The app does</span>
+                    <strong>Sends your settings</strong>
+                  </div>
+                  <div>
+                    <span class="mini-status-label">Then</span>
+                    <strong>Checks both entries</strong>
+                  </div>
+                  <div>
+                    <span class="mini-status-label">Result</span>
+                    <strong>Ready for reminders</strong>
+                  </div>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+  <script src="js/submit-settings.js"></script>
 </html>

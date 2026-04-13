@@ -1,6 +1,7 @@
 const form = document.getElementById("setup-form");
 const canvasUrlInput = document.getElementById("canvas-url");
 const ntfyTopicInput = document.getElementById("ntfy-topic");
+const passcodeInput = document.getElementById("passcode");
 const summaryCanvas = document.getElementById("summary-canvas");
 const summaryTopic = document.getElementById("summary-topic");
 const formStatus = document.getElementById("form-status");
@@ -12,7 +13,7 @@ const successCloseButtons = document.querySelectorAll("[data-close-success]");
 // production = same domain the site is hosted on
 const API_BASE =
   window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
+  window.location.hostname === "127.0.0.1"
     ? "http://localhost:3000"
     : "https://canvasautomationnotifier.onrender.com";
 
@@ -33,7 +34,8 @@ function getSuccessMessage(message) {
 function buildPreviewPayload() {
   return {
     canvas_url: canvasUrlInput?.value.trim() || "",
-    ntfy_topic: ntfyTopicInput?.value.trim() || ""
+    ntfy_topic: ntfyTopicInput?.value.trim() || "",
+    pass_code: passcodeInput?.value.trim() || "",
   };
 }
 
@@ -59,10 +61,15 @@ function showSuccessOverlay(message) {
 }
 
 function renderPreview() {
-  const { canvas_url: canvasUrl, ntfy_topic: ntfyTopic } = buildPreviewPayload();
+  const {
+    canvas_url: canvasUrl,
+    ntfy_topic: ntfyTopic,
+    pass_code: passCode,
+  } = buildPreviewPayload();
 
   if (summaryCanvas) {
-    summaryCanvas.textContent = canvasUrl || "Add your Canvas calendar link above.";
+    summaryCanvas.textContent =
+      canvasUrl || "Add your Canvas calendar link above.";
   }
 
   if (summaryTopic) {
@@ -79,7 +86,10 @@ if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
   });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && successOverlay?.classList.contains("is-visible")) {
+    if (
+      event.key === "Escape" &&
+      successOverlay?.classList.contains("is-visible")
+    ) {
       hideSuccessOverlay();
     }
   });
@@ -87,10 +97,15 @@ if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const { canvas_url: canvasUrl, ntfy_topic: ntfyTopic } = buildPreviewPayload();
+    const {
+      canvas_url: canvasUrl,
+      ntfy_topic: ntfyTopic,
+      pass_code: passCode,
+    } = buildPreviewPayload();
 
-    if (!canvasUrl || !ntfyTopic) {
-      formStatus.textContent = "Enter both the Canvas URL and ntfy topic.";
+    if (!canvasUrl || !ntfyTopic || !passCode) {
+      formStatus.textContent =
+        "Enter both the Canvas URL, ntfy topic, and passcode.";
       return;
     }
 
@@ -100,18 +115,21 @@ if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
       const response = await fetch(`${API_BASE}/api/submit`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           canvas_url: canvasUrl,
-          ntfy_topic: ntfyTopic
-        })
+          ntfy_topic: ntfyTopic,
+          pass_code: passCode,
+        }),
       });
 
       const data = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(data?.error || `Request failed with status ${response.status}`);
+        throw new Error(
+          data?.error || `Request failed with status ${response.status}`,
+        );
       }
 
       formStatus.textContent = "";
@@ -119,14 +137,15 @@ if (form && canvasUrlInput && ntfyTopicInput && formStatus) {
       renderPreview();
       showSuccessOverlay(data?.message);
     } catch (error) {
-      formStatus.textContent = error.message || "Could not submit settings. Check the backend URL and try again.";
+      formStatus.textContent =
+        error.message ||
+        "Could not submit settings. Check the backend URL and try again.";
       console.error("Submit failed:", error);
     }
   });
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-
   try {
     const response = await fetch(`${API_BASE}/api/status`, {
       method: "GET",
@@ -135,10 +154,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await response.json().catch(() => null);
 
     if (!response.ok) {
-      throw new Error(data?.error || `Request failed with status ${response.status}`);
+      throw new Error(
+        data?.error || `Request failed with status ${response.status}`,
+      );
     }
 
-    console.log("Waking up server")
+    console.log("Waking up server");
   } catch (error) {
     console.error("Could not wake up server");
   }
