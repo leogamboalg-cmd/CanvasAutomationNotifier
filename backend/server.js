@@ -201,7 +201,7 @@ app.post("/api/submit", submitLimiter, async (req, res) => {
   }
 });
 
-app.post("/api/delete", async (req, res) => {
+app.post("/api/delete", submitLimiter, async (req, res) => {
   try {
     const ntfyTopic = String(req.body.ntfy_topic || "").trim();
     const passCode = String(req.body.pass_code || "").trim();
@@ -212,7 +212,7 @@ app.post("/api/delete", async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ ntfyTopic: ntfyTopic });
+    const user = await User.findOne({ ntfy_topic: ntfyTopic });
 
     if (!user) {
       return res.status(404).json({
@@ -220,7 +220,7 @@ app.post("/api/delete", async (req, res) => {
       });
     }
 
-    const isMatch = await bcyrpt.compare(
+    const isMatch = await bcrypt.compare(
       applyPasscodePepper(passCode),
       user.pass_code,
     );
