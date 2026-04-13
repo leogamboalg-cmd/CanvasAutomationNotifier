@@ -229,7 +229,12 @@
 
             <label class="field">
               <span>Passcode</span>
-              <input id="passcode" name="passcode" type="password" placeholder="" aria-label="Passcode" required />
+              <div class="password-field">
+                <input id="passcode" name="passcode" type="password" aria-label="Passcode" required />
+                <button type="button" id="toggle-passcode" class="password-toggle">
+                  Show
+                </button>
+              </div>
             </label>
 
             <p class="field-hint">
@@ -318,8 +323,12 @@
 
             <label class="field">
               <span>Passcode</span>
-              <input id="delete-passcode" name="delete_passcode" type="password" aria-label="Delete passcode"
-                required />
+              <div class="password-field">
+                <input id="delete-passcode" type="password" aria-label="Delete passcode" required />
+                <button type="button" id="toggle-delete-passcode" class="password-toggle">
+                  Show
+                </button>
+              </div>
             </label>
 
             <button class="button button-secondary button-danger" type="submit">

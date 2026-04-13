@@ -1019,6 +1019,31 @@ code {
   box-shadow: 0 14px 34px rgba(220, 38, 38, 0.34);
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  width: 100%;
+  padding-right: 80px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: rgba(226, 232, 240, 0.7);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.password-toggle:hover {
+  color: white;
+}
+
 @keyframes slide-up {
   from {
     opacity: 0;

@@ -16,6 +16,8 @@ const confirmOverlay = document.getElementById("confirm-overlay");
 const confirmMessage = document.getElementById("confirm-message");
 const confirmAcceptButton = document.getElementById("confirm-accept");
 const confirmCloseButtons = document.querySelectorAll("[data-close-confirm]");
+const passcodeToggle = document.getElementById("toggle-passcode");
+const deletePasscodeToggle = document.getElementById("toggle-delete-passcode");
 
 // local dev = localhost / 127.0.0.1
 // production = same domain the site is hosted on
@@ -317,6 +319,24 @@ function showConfirmOverlay(message, onConfirm) {
   confirmOverlay.setAttribute("aria-hidden", "false");
   document.body.classList.add("overlay-open");
 }
+
+passcodeToggle?.addEventListener("click", () => {
+  if (!passcodeInput) return;
+
+  const isHidden = passcodeInput.type === "password";
+
+  passcodeInput.type = isHidden ? "text" : "password";
+  passcodeToggle.textContent = isHidden ? "Hide" : "Show";
+});
+
+deletePasscodeToggle?.addEventListener("click", () => {
+  if (!deletePasscodeInput) return;
+
+  const isHidden = deletePasscodeInput.type === "password";
+
+  deletePasscodeInput.type = isHidden ? "text" : "password";
+  deletePasscodeToggle.textContent = isHidden ? "Hide" : "Show";
+});
 
 confirmCloseButtons.forEach((button) => {
   button.addEventListener("click", hideConfirmOverlay);
